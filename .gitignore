@@ -1,0 +1,4 @@
+.env
+venv
+/tmpdir_tts
+tmpdir_vocoder
