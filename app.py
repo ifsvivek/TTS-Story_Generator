@@ -10,8 +10,9 @@ from groq import Groq
 # Load environment variables
 load_dotenv(find_dotenv())
 
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 # Initialize the device
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Initialize the Parler TTS model and tokenizer
 try:
