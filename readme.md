@@ -6,7 +6,7 @@ Generate short stories from images and transform them into lifelike audio using 
 ## 🌟 Features
 - **Image-to-Text**: Convert images to textual descriptions with the `Salesforce/blip-image-captioning-base` model.
 - **Story Generation**: Generate short stories (less than 20 words) using the `llama3-8b-8192` model from Groq.
-- **Text-to-Speech**: Convert stories into lifelike audio with expressive voices using `parler-tts/parler-tts-large-v1`.
+- **Text-to-Speech**: Convert stories into lifelike audio using the locally-run `parler-tts/parler-tts-large-v1 model`. No external API calls are needed for TTS!
 - **Seamless Integration**: Built-in support for GPU/CPU auto-detection and error handling for easy deployment.
 
 ---
@@ -87,7 +87,7 @@ Your final output will be saved as `parler_tts_out.wav`, ready for playback!
 
 - **Hugging Face API**: Used for image captioning with `Salesforce/blip-image-captioning-base`.
 - **Groq API**: Story generation powered by `llama3-8b-8192`.
-- **Parler TTS**: Converts text into lifelike speech with expressive details.
+- **Parler TTS**: Converts text into lifelike speech with expressive details.The TTS model runs entirely on your machine, leveraging local CPU/GPU resources for fast and efficient speech synthesis.
 
 ---
 
