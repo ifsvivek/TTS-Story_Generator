@@ -6,8 +6,7 @@ import requests
 from dotenv import load_dotenv, find_dotenv
 import os
 from IPython.display import Audio
-from groq import Groq  # Ensure you have the groq library installed
-
+from groq import Groq  
 # Load environment variables
 load_dotenv(find_dotenv())
 
@@ -25,7 +24,7 @@ except RuntimeError as e:
 tokenizer = AutoTokenizer.from_pretrained("parler-tts/parler-tts-large-v1")
 
 # Initialize the Groq client
-groq_client = Groq(api_key=os.getenv("GROQ_API"))  # Ensure your API key is set in .env file
+groq_client = Groq(api_key=os.getenv("GROQ_API"))  
 
 # Hugging Face API details
 API_URL = "https://api-inference.huggingface.co/models/myshell-ai/MeloTTS-English"
