@@ -2,3 +2,5 @@ python-dotenv
 transformers 
 torch
 pillow
+groq
+git+https://github.com/huggingface/parler-tts.git
