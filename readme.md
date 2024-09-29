@@ -1,13 +1,15 @@
+
 # 🎙️ Parler TTS Story Generator 🎙️
-Generate short stories from images and transform them into lifelike audio using **Parler TTS**, **Groq AI**, and **Hugging Face**.
+Generate short stories from images and transform them into lifelike audio using **Parler TTS**, **Groq AI**, and **Hugging Face** models, all within an interactive **Streamlit** app.
 
 ---
 
 ## 🌟 Features
-- **Image-to-Text**: Convert images to textual descriptions with the `Salesforce/blip-image-captioning-base` model.
-- **Story Generation**: Generate short stories (less than 20 words) using the `llama3-8b-8192` model from Groq.
-- **Text-to-Speech**: Convert stories into lifelike audio using the locally-run `parler-tts/parler-tts-large-v1 model`. No external API calls are needed for TTS!
-- **Seamless Integration**: Built-in support for GPU/CPU auto-detection and error handling for easy deployment.
+- **Image-to-Text Interpretation**: Convert images to textual descriptions with the `Salesforce/blip-image-captioning-base` model.
+- **Story Generation**: Generate short, creative stories (less than 20 words) based on the interpreted text using the `llama3-8b-8192` model from Groq.
+- **Text-to-Speech**: Convert generated stories into lifelike audio using the locally-run `parler-tts/parler-tts-large-v1` model, leveraging your GPU/CPU for fast processing.
+- **Streamlit Integration**: Interactive UI for uploading images, generating stories, and downloading audio.
+- **Error Handling**: Automatically switches to CPU if GPU isn't available and handles model loading errors.
 
 ---
 
@@ -19,7 +21,7 @@ Generate short stories from images and transform them into lifelike audio using 
 - **Parler TTS** for conditional generation
 - **Groq** API for story generation
 - **SoundFile** for audio output
-- **IPython** for audio playback
+- **Streamlit** for the UI
 
 ### Installation:
 1. Clone the repository:
@@ -30,7 +32,7 @@ Generate short stories from images and transform them into lifelike audio using 
 
 2. Install dependencies:
    ```bash
-   pip install torch parler-tts transformers soundfile ipython python-dotenv requests
+   pip install -r requirements.txt
    ```
 
 3. Set up environment variables:
@@ -48,61 +50,62 @@ Generate short stories from images and transform them into lifelike audio using 
 
 ## 🚀 Usage
 
-1. **Run the program**:
+1. **Run the app**:
    ```bash
-   python app.py
+   streamlit run app.py
    ```
 
-2. **Image-to-Text**:
-   The `img2text()` function uses the `Salesforce/blip-image-captioning-base` model to interpret images. Just replace `"Logo.jpg"` with your image file to get started.
+2. **Upload an image**:
+   Upload a `.jpg`, `.png`, or `.jpeg` image to generate a scenario description.
 
-3. **Story Generation**:
-   The `story_gen()` function takes the description and generates a short story using Groq's LLaMA model.
+3. **Generate a short story**:
+   The app will automatically interpret the uploaded image and generate a short story using Groq's LLaMA model.
 
-4. **Convert Story to Audio**:
-   The `story_to_audio_parler_tts()` function converts the story into audio using Parler TTS and saves it as a `.wav` file.
+4. **Convert the story into audio**:
+   The app will convert the story into a `.wav` audio file using Parler TTS, which you can listen to and download.
 
 ---
 
 ## 📁 Example Workflow:
 
-1. **Image** ➡️ **Text Description**
+1. **Upload Image** ➡️ **Text Description**
 2. **Text Description** ➡️ **Short Story**
-3. **Short Story** ➡️ **Audio**
+3. **Short Story** ➡️ **Lifelike Audio**
 
-Your final output will be saved as `parler_tts_out.wav`, ready for playback!
+The final audio will be saved as `parler_tts_out.wav`, available for download directly through the app.
 
 ---
 
-## ✨ Output
+## 🔑 Environment Variables
 
-- **Audio in IPython**: If you're working in Jupyter or IPython, you can instantly hear the output using:
-  ```python
-  Audio("parler_tts_out.wav")
-  ```
+Create a `.env` file in the project root to store your API keys:
+```
+HUGGING_FACE=<your_hugging_face_api_key>
+GROQ_API=<your_groq_api_key>
+```
 
 ---
 
 ## 📌 API Details
 
-- **Hugging Face API**: Used for image captioning with `Salesforce/blip-image-captioning-base`.
-- **Groq API**: Story generation powered by `llama3-8b-8192`.
-- **Parler TTS**: Converts text into lifelike speech with expressive details.The TTS model runs entirely on your machine, leveraging local CPU/GPU resources for fast and efficient speech synthesis.
+- **Hugging Face API**: Used for image captioning with the `Salesforce/blip-image-captioning-base` model.
+- **Groq API**: Powers the story generation using `llama3-8b-8192`.
+- **Parler TTS**: Converts text into expressive speech using the `parler-tts-large-v1` model, running on local resources.
 
 ---
 
-## 💡 Ideas for Extension
+## ✨ Possible Extensions
 
-- **Custom Voices**: Experiment with different Parler TTS voice configurations.
-- **Longer Stories**: Modify the story generation model for more detailed narratives.
-- **Advanced Image Analysis**: Try integrating other image-to-text models for deeper understanding.
+- **Custom Voices**: Experiment with different Parler TTS voice settings or modify the description to adjust the voice's style.
+- **Longer Stories**: Adapt the story generation prompt to produce more detailed narratives.
+- **Advanced Image Analysis**: Try other image-to-text models for deeper interpretation of the uploaded images.
 
 ---
 
 ## 🛠️ Troubleshooting
 
 - **CUDA Errors**: If CUDA isn't available, the program will switch to CPU automatically.
-- **Environment Variables**: Ensure `.env` file is correctly set with your API keys.
+- **Environment Variables**: Ensure the `.env` file contains correct API keys for Hugging Face and Groq.
 
 ---
 
@@ -117,3 +120,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Hugging Face for providing powerful models.
 - Groq for real-time AI model execution.
 - Parler TTS for enabling high-quality text-to-speech synthesis.
+- Streamlit for providing a seamless UI for deployment.
