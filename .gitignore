@@ -3,3 +3,5 @@ venv
 /tmpdir_tts
 tmpdir_vocoder
 Audio
+test.py
+parler_tts_out.wav
