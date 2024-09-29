@@ -1,5 +1,8 @@
+.venv
 .env
-venv
 /tmpdir_tts
 tmpdir_vocoder
 Audio
+__pycache__
+*.wav
+.vscode
