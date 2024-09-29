@@ -2,10 +2,9 @@ import torch
 from parler_tts import ParlerTTSForConditionalGeneration
 from transformers import AutoTokenizer, pipeline
 import soundfile as sf
-import requests
-from dotenv import load_dotenv, find_dotenv
 import os
-from IPython.display import Audio
+import streamlit as st
+from dotenv import load_dotenv, find_dotenv
 from groq import Groq
 
 # Load environment variables
@@ -16,26 +15,25 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Initialize the Parler TTS model and tokenizer
-try:
-    model = ParlerTTSForConditionalGeneration.from_pretrained(
-        "parler-tts/parler-tts-large-v1"
-    ).to(device)
-except RuntimeError as e:
-    print("Failed to load model on GPU, switching to CPU:", e)
-    device = "cpu"
-    model = ParlerTTSForConditionalGeneration.from_pretrained(
-        "parler-tts/parler-tts-large-v1"
-    ).to(device)
+@st.cache_resource
+def load_model():
+    try:
+        model = ParlerTTSForConditionalGeneration.from_pretrained(
+            "parler-tts/parler-tts-large-v1"
+        ).to(device)
+    except RuntimeError as e:
+        st.write("Failed to load model on GPU, switching to CPU:", e)
+        device = "cpu"
+        model = ParlerTTSForConditionalGeneration.from_pretrained(
+            "parler-tts/parler-tts-large-v1"
+        ).to(device)
+    return model
 
+model = load_model()
 tokenizer = AutoTokenizer.from_pretrained("parler-tts/parler-tts-large-v1")
 
 # Initialize the Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API"))
-
-# Hugging Face API details
-API_URL = "https://api-inference.huggingface.co/models/myshell-ai/MeloTTS-English"
-headers = {"Authorization": f"Bearer {os.getenv('HUGGING_FACE')}"}
-
 
 # Image interpretation
 def img2text(url):
@@ -46,9 +44,7 @@ def img2text(url):
     )
     result = image_to_text(url)
     text = result[0]["generated_text"] if result else ""
-    print("Image to text result:", text)
     return text
-
 
 # Story generation using Groq API
 def story_gen(scenario, model="llama3-8b-8192"):
@@ -71,10 +67,9 @@ def story_gen(scenario, model="llama3-8b-8192"):
         model=model,
     )
     story = chat_completion.choices[0].message.content
-    print("Generated story:", story)
     return story
 
-
+# Convert story to audio using Parler TTS
 def story_to_audio_parler_tts(story_text, output_filename="parler_tts_out.wav"):
     description = "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch."
 
@@ -87,18 +82,44 @@ def story_to_audio_parler_tts(story_text, output_filename="parler_tts_out.wav"):
         )
         audio_arr = generation.cpu().numpy().squeeze()
         sf.write(output_filename, audio_arr, model.config.sampling_rate)
-        print(f"Parler TTS Audio saved as {output_filename}")
+        return output_filename
     except RuntimeError as e:
-        print("Error during audio generation with Parler TTS:", e)
+        st.write("Error during audio generation with Parler TTS:", e)
+        return None
 
-
-# Main execution
+# Streamlit UI
 def main():
-    scenario = img2text("Logo.jpg")  # Replace with your image path
-    story = story_gen(scenario)  # Story generation
+    st.title("Story to Audio Generator")
 
-    # Convert the generated story into audio using Parler TTS
-    story_to_audio_parler_tts(story, output_filename="parler_tts_out.wav")
+    # Upload an image file
+    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+
+    if uploaded_file is not None:
+        # Display the uploaded image
+        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+
+        # Image interpretation
+        st.write("Generating text from the image...")
+        image_url = uploaded_file
+        scenario = img2text(image_url)  # Interpret image and generate text
+        st.write("Image to Text Result:", scenario)
+
+        # Story generation
+        st.write("Generating story from the image description...")
+        story = story_gen(scenario)
+        st.write("Generated Story:", story)  # Display the generated story
+
+        # Text-to-Speech conversion
+        st.write("Converting the story to speech...")
+        output_filename = story_to_audio_parler_tts(story)
+
+        if output_filename:
+            # Load and play the audio
+            audio_file = open(output_filename, "rb").read()
+            st.audio(audio_file, format="audio/wav")  # Media player for audio
+
+            # Provide a download button for the audio
+            st.download_button(label="Download the audio file", data=audio_file, file_name="parler_tts_out.wav")
 
 
 if __name__ == "__main__":
